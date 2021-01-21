@@ -43,16 +43,16 @@ func calculate(conn net.Conn) {
 
 		if err1 == nil && err2 == nil {
 			var ans int64
-			bool := true
+			validoperation := true
 			if operation[0] == '+' {
 				ans = num1 + num2
 			} else if operation[0] == '-' {
 				ans = num1 - num2
 			} else {
 				ans = -1
-				bool = false
+				validoperation = false
 			}
-			if bool {
+			if validoperation {
 				fmt.Println("   ")
 				fmt.Println(ans)
 				fmt.Fprintf(conn, strconv.Itoa(int(ans))+"\n")

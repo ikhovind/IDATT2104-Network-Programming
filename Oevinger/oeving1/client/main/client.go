@@ -16,13 +16,13 @@ func main() {
 	for {
 		// what to send?
 		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Text to send: ")
+		fmt.Println("First number: ")
 		num1, _ := reader.ReadString('\n')
 		fmt.Fprintf(conn, num1 )
-
+		fmt.Println("Operation")
 		operation, _ := reader.ReadString('\n')
 		fmt.Fprintf(conn, operation )
-
+		fmt.Println("Second number: ")
 		num2, _ := reader.ReadString('\n')
 
 		// send to server
