@@ -28,12 +28,12 @@ func indexHandler(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "<li>"+name+": "+value+"</li>")
 		}
 	}
+
 	fmt.Fprint(w,
 		"</ul>"+
 			"</body>\n</html>")
 
-	/*ua := r.Header.Values("User-Agent")
-	fmt.Fprint(w, ua)*/
+	defer r.Body.Close()
 }
 
 func main() {
