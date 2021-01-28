@@ -9,8 +9,6 @@ public class Opg1client {
     private InetAddress address;
     private byte[] buf;
 
-    public static int test = 4;
-
 
     public static void main(String[] args) throws IOException {
         Opg1client client = new Opg1client();
@@ -59,13 +57,11 @@ public class Opg1client {
     public String sendNums(int num1, int num2, boolean addition) throws IOException {
         String msg = num1 + "," + (addition ? "+" : "-") + "," + num2;
         buf = msg.getBytes();
-        DatagramPacket packet
-                = new DatagramPacket(buf, buf.length, address, 4445);
+        DatagramPacket packet = new DatagramPacket(buf, buf.length, address, 4445);
         socket.send(packet);
         packet = new DatagramPacket(buf, buf.length);
         socket.receive(packet);
-        String received = new String(
-                packet.getData(), 0, packet.getLength());
+        String received = new String(packet.getData(), 0, packet.getLength());
         return received;
     }
 

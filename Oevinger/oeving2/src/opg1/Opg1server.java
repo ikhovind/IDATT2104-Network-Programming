@@ -24,23 +24,30 @@ public class Opg1server extends Thread{
         running = true;
 
         while (running) {
-            DatagramPacket packet
-                    = new DatagramPacket(buf, buf.length);
+            buf = new byte[256];
+            DatagramPacket packet = new DatagramPacket(buf, buf.length);
             try {
                 socket.receive(packet);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-
             String s = new String(buf, StandardCharsets.UTF_8);
             String[] nums = s.split(",");
 
             int num1 = Integer.parseInt(nums[0]);
             int num2 = Integer.parseInt(nums[2].trim());
-            int sum = num1 + num2;
-
-            String response = "" + sum;
+            String response;
+            if (nums[1].equals("+")){
+                int sum = num1 + num2;
+                response = "" + sum;
+            } else if (nums[1].equals("-")){
+                int sum = num1 - num2;
+                response = "" + sum;
+            }
+            else {
+                response = "error";
+            }
             buf = response.getBytes();
 
             InetAddress address = packet.getAddress();
