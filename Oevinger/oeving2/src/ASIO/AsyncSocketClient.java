@@ -50,7 +50,7 @@ public class AsyncSocketClient {
         System.out.println("*Start client");
         AsyncSocketClient client = new AsyncSocketClient();
         client.init();
-        String serverString = client.sendMessage("TEST");
+        String serverString = client.sendMessage("hfdkjashdkjlashfjklhsd");
         System.out.println("Message for server " + serverString);
         //serverString = client.sendMessage("TEST 2**");
         //System.out.println("Message 2 from server " + serverString);

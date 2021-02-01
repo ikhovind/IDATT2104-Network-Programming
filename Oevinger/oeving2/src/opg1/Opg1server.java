@@ -17,7 +17,7 @@ public class Opg1server extends Thread{
         new Opg1server().start();
     }
     public Opg1server() throws SocketException {
-        socket = new DatagramSocket(4445);
+        socket = new DatagramSocket( 4445);
     }
 
     public void run() {
