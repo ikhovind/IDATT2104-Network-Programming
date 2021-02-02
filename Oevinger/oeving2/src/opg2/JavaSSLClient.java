@@ -18,6 +18,8 @@ public class JavaSSLClient {
     static final int port = 8080;
 
     public static void main(String[] args) {
+        System.setProperty("javax.net.ssl.trustStore", "/home/ingebrigt/Documents/uni-2/nettverksprog/Oevinger/oeving2/src/opg2/mykeystore/myTrustStore.jts");
+        System.setProperty("javax.net.ssl.trustStorePassword", "123456");
 
         SSLSocketFactory sslSocketFactory =
                 (SSLSocketFactory)SSLSocketFactory.getDefault();

@@ -1,4 +1,0 @@
-java -jar -Djavax.net.ssl.keyStore="C:\Users\Vaddy\Desktop\New folder (2)\Nettprog\proj\src\opg2\mykeystore\examplestore" -Djavax.net.ssl.keyStorePassword=password "C:\Users\Vaddy\Desktop\New folder (2)\Nettprog\proj\out\artifacts\JavaSSLServer\proj.jar"
-
-
-java -jar -Djavax.net.ssl.keyStore=keystore -Djavax.net.ssl.keyStorePassword=password "...JavaSSLServer.jar"

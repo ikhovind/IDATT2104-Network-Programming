@@ -18,7 +18,8 @@ public class JavaSSLServer {
     static final int port = 8080;
 
     public static void main(String[] args) {
-
+        System.setProperty("javax.net.ssl.keyStore", "/home/ingebrigt/Documents/uni-2/nettverksprog/Oevinger/oeving2/src/opg2/mykeystore/myKeyStore.jks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
 
         SSLServerSocketFactory sslServerSocketFactory =
                 (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
