@@ -43,8 +43,8 @@ int main(int argc, char* argv[]) {
 
     std::cout << "Used time: " << (end-start).count() << " ms" << std::endl;
 
-    for (int i = 0; i < maxNum; i++){
-        if(isPrime[i] && i >= minNum){
+    for (int i = minNum; i < maxNum; i++){
+        if(isPrime[i]){
             std::cout <<i << " ";
         }
     }
