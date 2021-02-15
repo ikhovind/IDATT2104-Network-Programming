@@ -15,11 +15,11 @@ import javax.net.ssl.SSLServerSocketFactory;
  */
 public class JavaSSLServer {
 
-    static final int port = 8080;
+    static final int port = 7263;
 
     public static void main(String[] args) {
-        System.setProperty("javax.net.ssl.keyStore", "/home/ingebrigt/Documents/uni-2/nettverksprog/Oevinger/oeving2/src/opg2/mykeystore/myKeyStore.jks");
-        System.setProperty("javax.net.ssl.keyStorePassword", "123456");
+        System.setProperty("javax.net.ssl.keyStore", "C:\\Users\\Vaddy\\OneDrive\\Documents\\2021-V\\Nettverksprogrammering\\Obliger\\OBL2\\proj\\src\\opg2\\myKeyStore.jks");
+        System.setProperty("javax.net.ssl.keyStorePassword", "password");
 
         SSLServerSocketFactory sslServerSocketFactory =
                 (SSLServerSocketFactory)SSLServerSocketFactory.getDefault();
