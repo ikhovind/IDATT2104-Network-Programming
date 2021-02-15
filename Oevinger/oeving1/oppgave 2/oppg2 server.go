@@ -9,6 +9,7 @@ import (
 func indexHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Status", "HTTP/1.0 200 OK")
+	w.Header().Set("Connection", "close")
 	fmt.Fprintln(w, w.Header().Get("Status"))
 	fmt.Fprintln(w, "<br>")
 	fmt.Fprintln(w, w.Header().Get("Content-Type"))
