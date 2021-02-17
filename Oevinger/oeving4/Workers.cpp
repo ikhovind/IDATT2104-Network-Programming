@@ -81,7 +81,6 @@ public:
     }
 
     void join() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(3000));
         for (int i = 0; i < numThreads; ++i) {
             if(threads[i].joinable()){
                 threads.at(i).join();
