@@ -9,7 +9,9 @@ int main() {
 
     std::function<void()> func = [&]{std::cout<<"test"<<std::endl;};
     worker_threads.start();
+    event_loop.start();
     worker_threads.post(&func);
     worker_threads.join();
+    event_loop.join();
     return 0;
 }
