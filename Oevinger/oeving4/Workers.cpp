@@ -9,6 +9,7 @@
 #include <list>
 #include <mutex>
 #include "condition_variable"
+
 class Workers{
 
     std::condition_variable cv;
@@ -38,8 +39,13 @@ public:
                 //references same mutex so will be locked at same time as mutex in post()
                 //unlocked when
                 std::unique_lock<std::mutex> guard(task_lock);
-                cv.wait(guard);
-                //std::function<void()> f = threads.front();
+                this->cv.wait(guard, [this]() {
+                        return tasks.empty();
+                    }
+                );
+                std::function<void()> f = tasks.front();
+                guard.unlock();
+                f();
             }
         }
         //kjør venting eller noe slikt som han viste i timen mens man venter på at post() kjører??
