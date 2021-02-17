@@ -51,8 +51,14 @@ public:
         //kjør venting eller noe slikt som han viste i timen mens man venter på at post() kjører??
     }
 
-    void post_timeout(){
+    //denne er vel bare det samme som join()??
+    void stop(){
 
+    }
+
+    void post_timeout(std::function<void()> *f, int ms){
+        std::this_thread::sleep_for(std::chrono::milliseconds (ms));
+        *f();
     }
 
     void join(){
