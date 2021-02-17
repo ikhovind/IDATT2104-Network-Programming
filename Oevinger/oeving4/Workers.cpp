@@ -8,6 +8,7 @@
 #include <functional>
 #include <list>
 #include <mutex>
+#include <deque>
 #include "condition_variable"
 
 class Workers{
@@ -24,7 +25,9 @@ public:
 
     //ta inn funksjoner som parameter pog
     void post(std::function<void()> *f){
+        //TODO does not enter this at all due to infinite loop in start()
         //guarantees that the lock will be unlocked when leaving scope
+        std::cout << "poop" << std::endl;
         std::unique_lock<std::mutex> guard(task_lock);
         tasks.emplace_back(*f);
         guard.unlock();
@@ -39,13 +42,19 @@ public:
                 //references same mutex so will be locked at same time as mutex in post()
                 //unlocked when
                 std::unique_lock<std::mutex> guard(task_lock);
-                this->cv.wait(guard, [this]() {
-                        return tasks.empty();
-                    }
-                );
-                std::function<void()> f = tasks.front();
-                guard.unlock();
-                f();
+                //TODO doesnt sleep at all runs loop continously
+                cv.wait(guard);
+                if(!tasks.empty()) {
+                    std::function<void()> f = tasks.front();
+                    std::cout << "fittetryne" << std::endl;
+                    std::cout << tasks.empty() << std::endl;
+
+                    f();
+                    tasks.pop_front();
+
+                    guard.unlock();
+                    std::cout << "troop" << std::endl;
+                }
             }
         }
         //kjør venting eller noe slikt som han viste i timen mens man venter på at post() kjører??
@@ -56,9 +65,9 @@ public:
 
     }
 
-    void post_timeout(std::function<void()> *f, int ms){
+    void post_timeout(std::function<void()> func, int ms){
         std::this_thread::sleep_for(std::chrono::milliseconds (ms));
-        *f();
+        func();
     }
 
     void join(){
