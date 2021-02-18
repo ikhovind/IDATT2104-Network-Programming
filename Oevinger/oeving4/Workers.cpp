@@ -9,9 +9,9 @@
 #include <functional>
 #include <list>
 #include <mutex>
-#include <deque>
 #include "condition_variable"
 
+static bool cont = true;
 class Workers {
 
     std::condition_variable cv;
@@ -22,52 +22,46 @@ class Workers {
 
 public:
     Workers(int numThreads) {
-        threads = std::vector<std::thread>(numThreads);
         this->numThreads = numThreads;
     }
 
-    //ta inn funksjoner som parameter pog
     void post(std::function<void()> *f) {
-        //TODO does not enter this at all due to infinite loop in consume()
-        //guarantees that the lock will be unlocked when leaving scope
-        std::cout << "poop" << std::endl;
+        std::cout << "post start" << std::endl;
+        //guarantees that the lock will be unlocked when leaving function scope
         std::unique_lock<std::mutex> guard(task_lock);
         tasks.emplace_back(*f);
         guard.unlock();
         //notify one thread as one possible task has been added
         cv.notify_one();
-        std::cout << "poop2" << std::endl;
+        std::cout << "post end" << std::endl;
     }
 
     void start() {
         for (int i = 0; i < numThreads; ++i) {
-            threads.emplace_back(
-                    std::thread(&Workers::consume, this)
+            threads.emplace_back( std::thread{&Workers::consume, this}
             );
         }
     }
 
     void consume() {
         //want to run forever until join() is called
-        while (true) {
+        while (cont) {
             //references same mutex so will be locked at same time as mutex in post()
-            //unlocked when
+            //unlocked when the thread later wakes up
             std::unique_lock<std::mutex> guard(task_lock);
-            //TODO doesnt sleep at all runs loop continously
             cv.wait(guard);
+            std::cout << "thread wakes" << std::endl;
             if (!tasks.empty()) {
-                std::function<void()> f = tasks.front();
-                std::cout << "fittetryne" << std::endl;
-                std::cout << tasks.empty() << std::endl;
+                std::cout << "consume, list of tasks not empty" << std::endl;
+
+                std::function<void()> &f = tasks.front();
+                tasks.pop_front();
+                guard.unlock();
 
                 f();
-                tasks.pop_front();
-
-                guard.unlock();
-                std::cout << "troop" << std::endl;
+                std::cout << "task finished" << std::endl;
             }
         }
-        //kjør venting eller noe slikt som han viste i timen mens man venter på at post() kjører??
     }
 
     //denne er vel bare det samme som join()??
@@ -81,9 +75,14 @@ public:
     }
 
     void join() {
+        //ensure that no more tasks will be started, then finish the while-loop and make every thread wake up
+        cont = false;
+        cv.notify_all();
         for (int i = 0; i < numThreads; ++i) {
+            std::cout << "attempting to join thread nr: " << i << std::endl;
             if(threads[i].joinable()){
-                threads.at(i).join();
+                threads[i].join();
+                std::cout << "thread nr " << i << " joined" << std::endl;
             }
         }
     }
