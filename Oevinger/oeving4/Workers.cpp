@@ -1,8 +1,3 @@
-//
-// Created by ingebrigt on 17.02.2021.
-// Edited by Erling on 17.02.2021.
-//
-
 #include <iostream>
 #include <vector>
 #include <thread>
@@ -11,9 +6,8 @@
 #include <mutex>
 #include "condition_variable"
 
-static bool cont = true;
 class Workers {
-
+    bool cont = true;
     std::condition_variable cv;
     std::list<std::function<void()>> tasks;
     std::mutex task_lock;
@@ -26,14 +20,12 @@ public:
     }
 
     void post(std::function<void()> *f) {
-        std::cout << "post start" << std::endl;
-        //guarantees that the lock will be unlocked when leaving function scope
+        //unique guarantees that the lock will be unlocked when leaving function scope
         std::unique_lock<std::mutex> guard(task_lock);
         tasks.emplace_back(*f);
         guard.unlock();
         //notify one thread as one possible task has been added
         cv.notify_one();
-        std::cout << "post end" << std::endl;
     }
 
     void start() {
@@ -47,24 +39,29 @@ public:
         //want to run forever until join() is called
         while (cont) {
             //references same mutex so will be locked at same time as mutex in post()
-            //unlocked when the thread later wakes up
             std::unique_lock<std::mutex> guard(task_lock);
-            cv.wait(guard);
-            std::cout << "thread wakes" << std::endl;
-            if (!tasks.empty()) {
-                std::cout << "consume, list of tasks not empty" << std::endl;
-
-                std::function<void()> &f = tasks.front();
-                tasks.pop_front();
-                guard.unlock();
-
-                f();
-                std::cout << "task finished" << std::endl;
+            cv.wait(guard, [this]{return !tasks.empty() || !cont;});
+            if(!cont) return;
+            //deep copy as pop_front destroys variable
+            std::function<void()> &f = tasks.front();
+            tasks.pop_front();
+            //small race condition where a task is added after the if returns true and before all threads are waked
+            // Every thread will then compete to acquire the lock which is bad for performance, has no other effect
+            guard.unlock();
+            //if the wrong thread is woken up, then the thread running join might not be waked and keep waiting
+            //therefore must make sure to wake the potential thread running join()
+            if(tasks.empty()){
+                cv.notify_all();
             }
+            else{
+                //need to notify here and not just in post() in-case more tasks are added than there are threads waiting
+                cv.notify_one();
+            }
+            f();
         }
     }
 
-    //denne er vel bare det samme som join()??
+    //TODO Legg til en Workers metode stop som avslutter workers trådene for eksempel når task-listen er tom. ??
     void stop() {
 
     }
@@ -75,14 +72,22 @@ public:
     }
 
     void join() {
-        //ensure that no more tasks will be started, then finish the while-loop and make every thread wake up
+        //ensure that no more tasks will be added while joining threads
+        std::unique_lock<std::mutex> guard(task_lock);
+        if(!tasks.empty()){
+            cv.wait(guard, [this]{
+                //only want to wake up if all tasks are finished
+                return tasks.empty();
+            });
+        }
+        //no more tasks will be run after this, even if they are added, safe to unlock
         cont = false;
+        guard.unlock();
+        //every thread will need to finish
         cv.notify_all();
         for (int i = 0; i < numThreads; ++i) {
-            std::cout << "attempting to join thread nr: " << i << std::endl;
             if(threads[i].joinable()){
                 threads[i].join();
-                std::cout << "thread nr " << i << " joined" << std::endl;
             }
         }
     }
