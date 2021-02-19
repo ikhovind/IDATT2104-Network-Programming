@@ -21,6 +21,9 @@ int main() {
         std::cout<<"event function 2"<<std::endl;
     };
 
+    std::function<void()> func5 = [&] {
+        std::cout<<"after sleeping function"<<std::endl;
+    };
 
 
 
@@ -28,6 +31,7 @@ int main() {
     event_loop.start();
     worker_threads.post(&func);
     worker_threads.post(&func2);
+    worker_threads.post_timeout(func5, 1000);
     event_loop.post(&func3);
     event_loop.post(&func4);
     worker_threads.join();

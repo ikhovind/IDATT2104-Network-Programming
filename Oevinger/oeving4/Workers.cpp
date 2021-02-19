@@ -61,14 +61,18 @@ public:
         }
     }
 
-    //TODO Legg til en Workers metode stop som avslutter workers trådene for eksempel når task-listen er tom. ??
+    //TODO "Legg til en Workers metode stop som avslutter workers trådene for eksempel når task-listen er tom." ??
     void stop() {
 
     }
-
+    
+    //can't get this to work with a pointer to the function, but c'est la vie
     void post_timeout(std::function<void()> func, int ms) {
-        std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-        func();
+        std::function<void()> f = [&] {
+            std::this_thread::sleep_for(std::chrono::milliseconds(ms));
+            func();
+        };
+        post(&f);
     }
 
     void join() {
