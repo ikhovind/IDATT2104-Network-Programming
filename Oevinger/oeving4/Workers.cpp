@@ -5,7 +5,8 @@
 #include <list>
 #include <mutex>
 #include "condition_variable"
-
+#include <sys/epoll.h>
+#include <sys/timerfd.h>
 class Workers {
     bool cont = true;
     std::condition_variable cv;
@@ -68,7 +69,9 @@ public:
     
     //can't get this to work with a pointer to the function, but c'est la vie
     void post_timeout(std::function<void()> func, int ms) {
-        std::function<void()> f = [&] {
+        //waiting happens after thread is picked out of queue, this is how the teaching assistant interpreted the task
+        std::function<void()> f = [func, ms]() {
+            std::cout << "hello from thread" << std::endl;
             std::this_thread::sleep_for(std::chrono::milliseconds(ms));
             func();
         };
