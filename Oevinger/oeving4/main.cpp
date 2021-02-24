@@ -1,15 +1,11 @@
 #include <iostream>
 #include "Workers.cpp"
 
-
-#pragma clang diagnostic push
-#pragma ide diagnostic ignored "EndlessLoop"
 int main() {
     Workers worker_threads(1);
 
     std::function<void()> func = [&] {
         std::cout<<"worker function 1"<<std::endl;
-        std::this_thread::sleep_for(std::chrono::milliseconds(5000));
     };
 
     std::function<void()> func2 = [&] {
@@ -28,12 +24,16 @@ int main() {
         std::cout<<"after sleeping function"<<std::endl;
     };
 
-
+    std::function<void()> func6 = [&] {
+        std::cout<<"after sleeping function  2"<<std::endl;
+    };
 
     worker_threads.start();
     worker_threads.post(func);
     worker_threads.post(func2);
     worker_threads.post_timeout_epoll(func5, 1000);
+    worker_threads.post_timeout_epoll(func6, 999);
+
     worker_threads.join();
 
     return 0;
