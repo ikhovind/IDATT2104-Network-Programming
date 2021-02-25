@@ -46,8 +46,8 @@ public:
             std::function<void()> &f = tasks.front();
             tasks.pop_front();
             guard.unlock();
+            //want to make sure the waiting join() thread is waked
             if(tasks.empty() && waiting == 0){
-                std::cout << "all waked " << std::endl;
                 cv.notify_all();
             }
             cv.notify_one();
