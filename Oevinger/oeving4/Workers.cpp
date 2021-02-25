@@ -7,11 +7,12 @@
 #include "condition_variable"
 #include <sys/epoll.h>
 #include <sys/timerfd.h>
+#include <atomic>
 
 
 class Workers {
     bool cont = true;
-    int waiting = 0;
+    std::atomic<int> waiting = 0;
     std::condition_variable cv;
     std::list<std::function<void()>> tasks;
     std::mutex task_lock;
@@ -45,6 +46,10 @@ public:
             std::function<void()> &f = tasks.front();
             tasks.pop_front();
             guard.unlock();
+            if(tasks.empty() && waiting == 0){
+                std::cout << "all waked " << std::endl;
+                cv.notify_all();
+            }
             cv.notify_one();
 
             f();
@@ -78,7 +83,7 @@ public:
 
     //here the waiting happens before the thread is posted
     void post_timeout_epoll(std::function<void()> func, int ms){
-        waiting++;
+        waiting.operator++();
         int epoll_fd = epoll_create1(0); //returns an integer referring to an open file
         epoll_event timeout;
         timeout.events = EPOLLIN; //EPOLLIN notifies when the file is available for reading
@@ -117,7 +122,7 @@ public:
                         post(func);
                     }
                 }
-           waiting--;
+           waiting.operator--();
        }));
     }
 
