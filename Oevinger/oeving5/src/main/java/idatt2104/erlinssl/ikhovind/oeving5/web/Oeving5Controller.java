@@ -24,8 +24,7 @@ public class Oeving5Controller {
     @PostMapping("/programs")
     public String enterCode(@RequestBody String input) throws IOException {
         String unEscapedHTML = URLDecoder.decode(input);
-        BufferedWriter writer = new BufferedWriter(new FileWriter("out.cpp"));
-
+        BufferedWriter writer = new BufferedWriter(new FileWriter("/docker/out.cpp"));
         System.out.println(unEscapedHTML);
         writer.write(unEscapedHTML.substring(10));
         writer.close();

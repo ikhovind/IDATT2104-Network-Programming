@@ -33,4 +33,4 @@ build/
 
 ### VS Code ###
 .vscode/
-/out.cpp
+/docker/out.cpp
