@@ -1,4 +1,7 @@
-FROM alpine
+FROM frolvlad/alpine-gxx
 
-COPY script.sh /script.sh
-CMD ["./script.sh"]
+COPY runcpp.sh /runcpp.sh
+
+COPY out.cpp /out.cpp
+
+CMD ["./runcpp.sh"]
