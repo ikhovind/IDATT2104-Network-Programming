@@ -9,10 +9,16 @@
 <body>
 <h1>Compile C++</h1>
 
-<form action="/main.cpp" method="post">
+<form action="/programs" method="post" accept-charset="utf-8">
     <label for="inputCode">main.cpp:</label>
     <br>
-    <textarea id="inputCode" name="inputCode" rows="4" cols="50"\></textarea>
+    <textarea id="inputCode" name="inputCode" rows="4" cols="50"\>
+#include <stdio.h>
+
+int main(){
+   printf("hello world");
+}
+    </textarea>
     <br><br>
     <input type="submit" value="Submit">
 </form>
