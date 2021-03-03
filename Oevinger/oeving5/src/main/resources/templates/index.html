@@ -2,9 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>online c++ compiler</title>
 </head>
-
 
 <body>
 <h1>Compile C++</h1>
@@ -16,11 +15,11 @@
 #include <stdio.h>
 
 int main(){
-   printf("hello world");
+   printf("c++ compiled and run");
 }
     </textarea>
     <br><br>
-    <input type="submit" value="Submit">
+    <input id="inputButton" type="submit" value="Submit">
 </form>
 
 <p>Click the "Submit" button and the form-data will be sent to a page on the
@@ -28,9 +27,23 @@ int main(){
 <br><br>
     <label for="outputCode">Output:</label>
     <br>
-<textarea id="outputCode" name="outputCode" rows="4" cols="50"></textarea>
+<textarea id="outputCode" name="outputCode" rows="4" cols="50">
+    code will appear here
+</textarea>
 
 
 </body>
+<script type="text/javascript">
+    let button = document.getElementById("inputButton");
+
+    button.addEventListener('click', function () {
+        const Http = new XMLHttpRequest();
+        const url = "localhost:8080/programs";
+        Http.open("POST",url);
+        Http.send(document.getElementById("inputCode").value);
+
+        document.getElementById("outputCode").value = Http.responseText;
+    })
+</script>
 
 </html>
