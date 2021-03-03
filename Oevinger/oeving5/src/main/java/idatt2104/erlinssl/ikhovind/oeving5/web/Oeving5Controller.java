@@ -1,13 +1,10 @@
 package idatt2104.erlinssl.ikhovind.oeving5.web;
 
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import java.io.*;
-import java.net.URI;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
@@ -41,11 +38,7 @@ public class Oeving5Controller {
         }
         //exitcode other than 0 means an error (code didn't compile successfully probably)
         else{
-            //TODO return an error message to output
-
-            //todo figure out what error to use here
-            return new ResponseEntity("compilation error", HttpStatus.BAD_REQUEST);
-
+            return new ResponseEntity("Compilation ERROR", HttpStatus.BAD_REQUEST);
         }
     }
 }
