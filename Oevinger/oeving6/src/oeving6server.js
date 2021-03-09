@@ -85,16 +85,12 @@ server.on('upgrade', (req, socket) => {
     let resp = "hello from server"
     socket.write(getReplyBuffer(resp));
 
-    function test(){
-        console.log("success");
-    }
 });
 
-
-function getReplyBuffer(data){
+function getReplyBuffer(data) {
     let bytes = [0x81];
     bytes.push(data.length);
-    for(let i = 0; i < data.length; i+=1){
+    for (let i = 0; i < data.length; i += 1) {
         bytes.push(data.charCodeAt(i));
     }
 
