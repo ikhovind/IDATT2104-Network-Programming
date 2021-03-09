@@ -1,8 +1,11 @@
 
-var crypto = require('crypto')
-const net = require('net');
+const readline = require('readline');
 const { createHash } = require('crypto');
 const http = require('http');
+const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
 
 // Simple HTTP server responds with a simple WebSocket client test
 const requestListener = function (req, res) {
@@ -18,7 +21,9 @@ const requestListener = function (req, res) {
     <script>
       let ws = new WebSocket('ws://localhost:8080');
       ws.onmessage = event => alert('Message from server: ' + event.data);
-      ws.onopen = () => ws.send("hei");
+      ws.onopen = () => ws.send("hello from client");
+      ws.onmessage = (event) => console.log(event.data);
+      
       
     </script>
   </body>
@@ -62,24 +67,37 @@ server.on('upgrade', (req, socket) => {
 
     //is run when client calls ws.send
     socket.on("data", (req, socket) => {
-        console.log(req);
         let response = [];
         if(req[0] == parseInt("81", 16)){
-            console.log("text message");
             //masked if first bit is 1
             let masked = (req[1] & 128) === 128
             //length in bytes given by next seven bits
             let length = (req[1] & 127);
-            console.log(masked);
-
-            console.log(length);
-
             let dataStart = 6;
             for(let i = dataStart; i < dataStart + length; i++){
                 let byte = req[i] ^ req[2 + ((i - dataStart) % 4)];
                 response[i - dataStart] = (String.fromCharCode(byte));
             }
-            response.forEach(s=> console.log(s))
+            console.log(response.join(""));
         }
     });
+
+    let resp = "hello from server"
+    socket.write(getReplyBuffer(resp));
+
+    function test(){
+        console.log("success");
+    }
 });
+
+
+function getReplyBuffer(data){
+    let bytes = [0x81];
+    bytes.push(data.length);
+    for(let i = 0; i < data.length; i+=1){
+        bytes.push(data.charCodeAt(i));
+    }
+
+    return Buffer.from(bytes);
+}
+
