@@ -1,42 +1,15 @@
 
-const readline = require('readline');
 const { createHash } = require('crypto');
 const http = require('http');
-const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+const client = require('./client');
 
-// Simple HTTP server responds with a simple WebSocket client test
-const requestListener = function (req, res) {
-
-    res.setHeader("Content-Type", "text/html");
-    let content = `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />    
-  </head>
-  <body>
-    WebSocket test page
-    <script>
-      let ws = new WebSocket('ws://localhost:8080');
-      ws.onmessage = event => alert('Message from server: ' + event.data);
-      ws.onopen = () => ws.send("hello from client");
-      ws.onmessage = (event) => console.log(event.data);
-      
-      
-    </script>
-  </body>
-</html>
-`;
-
-        res.writeHead(200);
-        res.end(content);
-};
-const server = http.createServer(requestListener);
+const server = http.createServer(client.requestListener);
 server.listen(8080);
 
+const sockets = [];
+
 server.on('upgrade', (req, socket) => {
+    sockets.push(socket);
     // Read the websocket key provided by the client:
     const acceptKey = req.headers['sec-websocket-key'];
     // Generate the response value to use in the response:
@@ -78,13 +51,16 @@ server.on('upgrade', (req, socket) => {
                 let byte = req[i] ^ req[2 + ((i - dataStart) % 4)];
                 response[i - dataStart] = (String.fromCharCode(byte));
             }
-            console.log(response.join(""));
+            for(let i = 0; i < sockets.length; i++){
+                try{
+                    sockets[i].write(getReplyBuffer(response.join("")))
+                } catch(error){
+                    //error is thrown when we are unable to write to it, in that case just delete it
+                    sockets.splice(i, 1);
+                }
+            }
         }
     });
-
-    let resp = "hello from server"
-    socket.write(getReplyBuffer(resp));
-
 });
 
 function getReplyBuffer(data) {
@@ -93,7 +69,6 @@ function getReplyBuffer(data) {
     for (let i = 0; i < data.length; i += 1) {
         bytes.push(data.charCodeAt(i));
     }
-
     return Buffer.from(bytes);
 }
 
