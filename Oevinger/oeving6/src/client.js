@@ -6,17 +6,14 @@ module.exports.requestListener = function (req, res) {
 <html>
   <head>
     <meta charset="UTF-8" />    
-<style>
-    body {
-    overflow: hidden;
-}
-
-canvas {
-    background: lightgrey;
-    width: 664px;
-    height: 664px;
-}
-</style>
+        <style>
+        
+        canvas {
+            background: lightgrey;
+            width: 664px;
+            height: 664px;
+        }
+        </style>
     </head>
   <body>
     WebSocket test page
@@ -28,9 +25,7 @@ canvas {
             let positions = event.data.toString().split(",");
             colorCanvas(positions[0], positions[1]);
         };
-        ws.onclose = (event) => {
-            ws.send("nå er denne closet");
-        }
+        
         let canvas = document.getElementById("canvas");
         let ctx = canvas.getContext("2d");
 
@@ -42,13 +37,14 @@ canvas {
         canvas.addEventListener("mouseup", function(e){
             canvas.onmousemove = null
         });
+        
         function mouseMoveFunction(e){
             let pos = getMousePos(canvas, e); 
             let str = pos.x + "," + pos.y;
             ws.send(str);
         }
         function getMousePos(canvas, evt) {
-            var rect = canvas.getBoundingClientRect();
+            let rect = canvas.getBoundingClientRect();
             return {
               x: evt.clientX - rect.left,
               y: evt.clientY - rect.top
